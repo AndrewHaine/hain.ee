@@ -2,9 +2,14 @@
   "name": "hainee",
   "version": "1.0.0",
   "description": "",
+  "private": true,
+  "engines": {
+    "node": ">= 7.6.0"
+  },
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "boot": "nodemon start.js",
+    "dev-watch": "concurrently \"npm run boot\" \"webpack --watch\""
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +19,7 @@
     "csurf": "^1.9.0",
     "dotenv": "^4.0.0",
     "express": "^4.15.4",
+    "memory-cache": "^0.2.0",
     "moment": "^2.18.1",
     "mongoose": "^4.10.8",
     "nodemon": "^1.11.0",

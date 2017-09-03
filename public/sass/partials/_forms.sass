@@ -1,0 +1,64 @@
+/* Component: Forms                                  */
+/*----------------------------------------------------------------------------------*/
+
+.field
+  &.text
+    input
+      padding: .7rem 2rem .6rem .5rem
+      font-size: 110%
+      border: 0
+      border-radius: 4px
+      font-family: $font--body
+      color: $color--razzmatazz
+
+      &::placeholder
+        color: $color--grey
+        font-family: $font--body
+        font-weight: 200
+
+button
+  font-weight: 500
+
+form.url-form
+  display: flex
+  align-items: center
+  justify-content: center
+  flex-direction: column
+  margin-top: 3rem
+  width: 90%
+  max-width: 640px
+
+  .field.text
+    width: 75%
+
+    input
+      width: 100%
+      box-shadow: 0 1px 4px rgba($color--black, .3)
+
+  .form__actions
+    margin-top: 1rem
+    text-align: center
+
+  label
+    display: none
+
+@include respond(600px)
+  form.url-form
+    flex-direction: row
+    align-items: stretch
+
+    .field.text
+      width: auto
+      flex-grow: 6
+
+      input
+        width: 100%
+
+    .form__actions
+      display: flex
+      justify-content: center
+      margin-top: 0
+      flex-grow: 1
+
+      button
+        margin-left: 1rem

@@ -7,7 +7,7 @@ require('dotenv').config();
 // DB models
 require('./models/SavedURL');
 
-mongoose.connect(process.env.DB_HOST);
+mongoose.connect(process.env.DB_HOST, {useMongoClient: true});
 mongoose.promise = global.Promise;
 mongoose.connection.on('error', (e) => console.log(`🚨 ${e.message} 🚨`));
 

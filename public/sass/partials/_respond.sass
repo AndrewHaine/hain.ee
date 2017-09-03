@@ -1,0 +1,12 @@
+/* A couple of mixins for responsive stuff                                  */
+/*----------------------------------------------------------------------------------*/
+
+// min-width for responsiveness
+@mixin respond($width)
+	@media screen and (min-width: $width)
+		@content
+
+// retina specific styles
+@mixin retina
+	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)
+		@content

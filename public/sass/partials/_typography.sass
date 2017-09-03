@@ -1,0 +1,32 @@
+/* Typographic styles                                  */
+/*----------------------------------------------------------------------------------*/
+
+body
+  color: $color__white
+  font-size: 90%
+
+  a
+    color: $color__white
+    font-weight: 600
+
+    &:hover
+      text-decoration: none
+
+@include respond(500px)
+  body
+    font-size: 100%
+
+h1
+  margin: 0 auto .2em
+  color: $color--white
+  font-family: $font--title
+  text-align: center
+  font-size: 3.8em
+
+@include respond(900px)
+  h1
+    font-size: 4.5em
+
+@include respond(1200px)
+  h1
+    font-size: 6em

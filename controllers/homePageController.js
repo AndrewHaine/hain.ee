@@ -2,7 +2,8 @@
 
 exports.index = (req, res) => {
   res.render('index', {
-    title: 'Welcome to my new node website!',
+    title: 'Hain.ee',
+    content: 'Save some bytes, shorten that URL!',
     csrfToken: req.csrfToken()
   });
 };

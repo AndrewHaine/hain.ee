@@ -1,0 +1,22 @@
+/* Component: Buttons                                  */
+/*----------------------------------------------------------------------------------*/
+
+
+.button__shorten
+  padding: .7rem 2rem
+  border: 0
+  border-radius: 4px
+  background-color: $color--green
+  color: $color--white
+  font-family: $font--body
+  box-shadow: 0 2px 3px rgba($color--black, .2)
+  transition: all .1s ease-in-out
+  outline: none
+  cursor: pointer
+
+  &:hover,
+  &:focus
+    background-color: darken($color__green, 8)
+
+  &:active
+    transform: scale(.9)
