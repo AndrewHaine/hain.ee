@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
-const savedURLSchema = new Schema({
+mongoose.Promise = global.Promise;
+
+const savedLinkSchema = new mongoose.Schema({
   url: {
     type: String,
     trim: true,
@@ -10,4 +11,4 @@ const savedURLSchema = new Schema({
   timesVisited: Number
 });
 
-module.exports = mongoose.model('SavedURL', savedURLSchema);
+module.exports = mongoose.model('SavedLink', savedLinkSchema);

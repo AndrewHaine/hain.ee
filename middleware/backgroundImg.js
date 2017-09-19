@@ -31,22 +31,23 @@ const unsplashUTM = '?utm_source=hain.ee&utm_medium=referral&utm_campaign=api-cr
 */
 module.exports = async (req, res, next) => {
   const url = `https://api.unsplash.com/photos/random/?client_id=${process.env.UNSPLASH_APPID}`;
-  let imgData;
+  let imageData;
 
   if(cache.get(cacheKey)) {
-    imgData = JSON.parse(cache.get(cacheKey));
+    imageData = JSON.parse(cache.get(cacheKey));
   } else {
-    await getNewImage(req, res, url)
-    .then(data => imgData = JSON.parse(data))
-    .catch(e => {
-      console.error(e);
-      imgData = defaultValues;
-    });
+    try {
+      const newImageData = await getNewImage(req, res, url);
+      imageData = JSON.parse(newImageData);
+    } catch (e) {
+      console.error('Background Image Middleware Error: ' + e.message);
+      imageData = defaultValues;
+    }
   }
 
-  res.locals.backgroundImageUrl = imgData.urls.regular;
-  res.locals.backgroundImageUserName = imgData.user.name;
-  res.locals.backgroundImageUserUrl = imgData.user.links.html + unsplashUTM;
+  res.locals.backgroundImageUrl = imageData.urls.regular;
+  res.locals.backgroundImageUserName = imageData.user.name;
+  res.locals.backgroundImageUserUrl = imageData.user.links.html + unsplashUTM;
 
   next();
 };
@@ -58,9 +59,9 @@ const getNewImage = (req, res, url) => {
   return new Promise((resolve, reject) => {
     let rawData = '';
     const unsplashRequest = http.get(url, res => {
-      res.on('data', (imgData) => {
+      res.on('data', (imageData) => {
 
-        rawData += imgData;
+        rawData += imageData;
 
         cache.put(cacheKey, rawData, cacheDuration);
 
