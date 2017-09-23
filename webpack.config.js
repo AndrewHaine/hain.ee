@@ -13,69 +13,103 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 */
 
 const uglify = new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}});
-
 const extractCss = new ExtractTextPlugin({filename: 'styles.min.css'});
+const hotReload = new webpack.HotModuleReplacementPlugin();
 
 /*
   Loaders
 */
 
 const javascript = {
-  test: /\.js$/i,
-  exclude: /node_modules/,
+  test: /\.js(x)?$/i,
+  exclude: /node_modules(?!\/webpack-dev-server)/,
   use: [
     {
-      loader: 'babel-loader',
-      options: {presets: ['es2015']}
+      loader: 'babel-loader'
     },
     {
       loader: 'eslint-loader'
     }
-]
+  ]
 };
 
-const css = {
-  test: /\.sass$/i,
-  use: extractCss.extract({
-    fallback: 'style-loader',
-    use: [
-      {
-        loader: 'css-loader',
-        options: {sourceMap: true}
-      },
-      {
-        loader: 'postcss-loader',
-        options: {
-          sourceMap: true,
-          plugins() {
-            return [
-              autoprefixer({
-                'browsers': ['last 2 versions']
-              }),
-              cssnano()
-            ]
-          }
-        }
-      },
-      {
-        loader: 'sass-loader',
-        options: {sourceMap: true}
+let css;
+const standardCssLoaders = [
+  {
+    loader: 'css-loader',
+    options: {sourceMap: true}
+  },
+  {
+    loader: 'postcss-loader',
+    options: {
+      sourceMap: true,
+      plugins() {
+        return [
+          autoprefixer({
+            'browsers': ['last 2 versions']
+          }),
+          cssnano()
+        ];
       }
-    ]
-  })
-};
+    }
+  },
+  {
+    loader: 'sass-loader',
+    options: {sourceMap: true}
+  }
+];
+
+if(process.env.NODE_ENV === 'eject') {
+  css = {
+    test: /\.sass$/i,
+    use: extractCss.extract({
+      fallback: 'style-loader',
+      use: standardCssLoaders
+    })
+  };
+} else {
+  const cssToJs = ['style-loader'].concat(standardCssLoaders);
+  css = {
+    test: /\.sass$/i,
+    include: /public\/sass/,
+    exclude: /node_modules/,
+    use: cssToJs
+  };
+}
 
 const svg = {
   test: /\.svg$/i,
   use: 'svg-url-loader'
 };
 
+const devServer = {
+  host: 'localhost',
+  hot: true,
+  inline: true,
+  port: 3202,
+  proxy: {
+    '*': 'http://localhost:3200'
+  }
+};
+
+let plugins;
+if(process.env.NODE_ENV === 'eject') {
+  plugins = [uglify, extractCss, hotReload];
+} else {
+  plugins = [hotReload];
+}
+
 /*
   Config
 */
 
 const conf = {
-  entry: './public/js/bundle.js',
+  entry: [
+    'react-hot-loader/patch',
+    'webpack-dev-server/client?http://localhost:3202',
+    'webpack/hot/only-dev-server',
+    './public/js/index.js',
+  ],
   devtool: 'source-map',
   output: {
     path: path.resolve(__dirname, 'public', 'dist'),
@@ -84,10 +118,8 @@ const conf = {
   module: {
     rules: [javascript, css, svg]
   },
-  plugins: [
-    extractCss,
-    uglify
-  ]
+  devServer: devServer,
+  plugins: plugins
 };
 
 module.exports = conf;

@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 // CSRF protection on forms
-app.use(csrf({cookie: true}));
+// app.use(csrf({cookie: true})); // Turned off for now
 
 // Middleware for adding standard functions for template use
 app.use((req, res, next) => {

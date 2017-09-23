@@ -6,9 +6,12 @@ env:
   node: true
 extends: 'eslint:recommended'
 parserOptions:
+  ecmaFeatures:
+    jsx: true
   sourceType: module
 rules:
   no-console: 0
+  no-unused-vars: 0
   indent:
     - error
     - 2
@@ -21,3 +24,5 @@ rules:
   semi:
     - error
     - always
+plugins:
+  - react

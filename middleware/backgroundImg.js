@@ -13,12 +13,12 @@ const cache = require('memory-cache');
 */
 const defaultValues = {
   "urls": {
-    "regular": 'https://images.unsplash.com/photo-1500229285422-9508ce34dedc?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&w=1080&fit=max'
+    "regular": "https://images.unsplash.com/photo-1500229285422-9508ce34dedc?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&w=1080&fit=max"
   },
   "user": {
     "name": 'Michael Heuser',
     "links": {
-      "html": 'https://unsplash.com/@gum_meee?utm_source=hain.ee&utm_medium=referral&utm_campaign=api-credit'
+      "html": "https://unsplash.com/@gum_meee?utm_source=hain.ee&utm_medium=referral&utm_campaign=api-credit"
     }
   }
 };
@@ -59,6 +59,8 @@ const getNewImage = (req, res, url) => {
   return new Promise((resolve, reject) => {
     let rawData = '';
     const unsplashRequest = http.get(url, res => {
+      res.setEncoding('utf8');
+
       res.on('data', (imageData) => {
 
         rawData += imageData;

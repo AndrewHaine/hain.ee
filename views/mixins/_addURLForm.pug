@@ -1,8 +1,2 @@
 mixin addURLForm()
-  form(action="/addURL" method="POST" class="url-form")
-    input(type="hidden" name="_csrf" value=`${csrfToken}`)
-    .field.text
-      label(for="url") Enter your URL:
-      input(type="text" name="url" placeholder="Enter a URL" required)
-    .form__actions
-      button.button__shorten Shorten
+  #form-container
