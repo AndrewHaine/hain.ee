@@ -8,6 +8,11 @@ const savedLinkSchema = new mongoose.Schema({
     trim: true,
     required: 'Please enter a URL to shorten'
   },
+  idString: {
+    type: String,
+    trim: true,
+    required: 'Oops, looks like no ID was passed'
+  },
   timesVisited: Number
 });
 

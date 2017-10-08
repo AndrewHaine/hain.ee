@@ -1,0 +1,99 @@
+/* Component: Page Preview                                  */
+/*----------------------------------------------------------------------------------*/
+
+/* ----------- Main body -----------*/
+
+.shorten-preview
+  position: absolute
+  top: 120%
+  display: none
+  width: 100%
+  padding: 1rem
+  border-radius: 5px
+  background: rgba($color__white, .75)
+
+  &::before
+    position: absolute
+    top: -20px
+    left: calc(50% - 10px)
+    width: 20px
+    height: 20px
+    content: ''
+    background-image: url('../images/ui/white-triangle.svg')
+    background-size: 100% auto
+    background-position: auto 100%
+
+@include respond(600px)
+  .shorten-preview
+    top: 140%
+    padding: 1.7rem
+
+    &::before
+      left: 8%
+
+/* ----------- Preview Content -----------*/
+.shorten-preview__content
+  display: flex
+  justify-content: flex-start
+
+
+/* ----------- Image -----------*/
+.shorten-preview__image
+  display: none
+  flex-shrink: 0
+  width: 65px
+  height: 65px
+  background: $color--grey
+
+@include respond(375px)
+  .shorten-preview__image
+    display: block
+
+@include respond(600px)
+  .shorten-preview__image
+    width: 80px
+    height: 80px
+
+/* ----------- Text -----------*/
+
+.shorten-preview__text
+  display: flex
+  flex-direction: column
+  align-items: flex-start
+  width: 100%
+
+@include respond(375px)
+  .shorten-preview__text
+    padding-left: 1rem
+
+@include respond(600px)
+  .shorten-preview__text
+    padding-left: 1.4rem
+
+.shorten-preview__title,
+.shorten-preview__link
+  display: block
+  padding: .4em
+  background: $color__grey
+  min-height: 1em
+
+.shorten-preview__title
+  min-width: 70%
+  margin-bottom: .5em
+  font-weight: bold
+  color: $color--alt-black
+
+@include respond(650px)
+  .shorten-preview__title
+    font-size: 1.2rem
+
+.shorten-preview__link
+  min-width: 55%
+  font-weight: 100
+  color: $color--dark-grey
+  text-decoration: underline
+  font-size: .9em
+  cursor: pointer
+
+  &:hover
+    text-decoration: none

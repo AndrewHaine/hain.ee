@@ -12,6 +12,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
   Plugins
 */
 
+const defineProduction = new webpack.DefinePlugin({'process.env': {NODE_ENV: JSON.stringify('production')}});
 const uglify = new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}});
 const extractCss = new ExtractTextPlugin({filename: 'styles.min.css'});
 const hotReload = new webpack.HotModuleReplacementPlugin();
@@ -83,18 +84,20 @@ const svg = {
 };
 
 const devServer = {
-  host: 'localhost',
+  contentBase: path.join(__dirname, '/dist/'),
+  host: '0.0.0.0',
   hot: true,
   inline: true,
   port: 3202,
   proxy: {
     '*': 'http://localhost:3200'
-  }
+  },
+  publicPath: '/dist/'
 };
 
 let plugins;
 if(process.env.NODE_ENV === 'eject') {
-  plugins = [uglify, extractCss, hotReload];
+  plugins = [defineProduction, uglify, extractCss, hotReload];
 } else {
   plugins = [hotReload];
 }
@@ -104,7 +107,7 @@ if(process.env.NODE_ENV === 'eject') {
 */
 
 const conf = {
-  entry: [
+  entry: process.env.NODE_ENV === 'eject' ? './public/js/index.js' : [
     'react-hot-loader/patch',
     'webpack-dev-server/client?http://localhost:3202',
     'webpack/hot/only-dev-server',

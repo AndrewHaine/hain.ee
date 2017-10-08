@@ -4,7 +4,7 @@
 .field
   &.text
     input
-      padding: .7rem 2rem .6rem .5rem
+      padding: 1rem 2rem .8rem 1rem
       font-size: 110%
       border: 0
       border-radius: 4px
@@ -28,11 +28,21 @@ form.url-form
   width: 100%
 
   .field.text
-    width: 75%
+    position: relative
+    width: 100%
 
     input
       width: 100%
+      border-radius: 4px
       box-shadow: 0 1px 4px rgba($color--black, .3)
+      transition: all .2s ease-in-out
+
+      &:focus
+        outline: none
+        background: lighten($color--yellow-orange, 30)
+
+        &::placeholder
+          color: $color--alt-black
 
   .form__actions
     margin-top: 1rem
@@ -55,7 +65,7 @@ form.url-form
 
     .form__actions
       display: flex
-      justify-content: center
+      justify-content: flex-end
       margin-top: 0
       flex-grow: 1
 
@@ -64,5 +74,30 @@ form.url-form
 
 /* ----------- Form Container -----------*/
 #form-container
-  width: 90%
+  position: relative
+  width: 83%
   max-width: 600px
+
+/* ----------- Form Errors -----------*/
+.form-error
+  position: absolute
+  top: 260%
+  display: block
+  padding: .5rem 1rem .4rem
+  border-radius: 3px
+  font-size: 90%
+  opacity: 0
+  background: rgba($color--red, .4)
+  visibility: hidden
+  transform: translateY(-20%)
+  transition: none
+
+  &[data-erroring='true']
+    opacity: 1
+    transform: none
+    visibility: visible
+    transition: all .3s ease-in-out
+
+@include respond(600px)
+  .form-error
+    top: 140%
