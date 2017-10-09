@@ -57,7 +57,6 @@ class URLForm extends React.Component {
   }
 
   requestShortenedURL(url) {
-    console.log(url);
     fetch('/addURL', {
       credentials: 'same-origin',
       method: 'POST',
