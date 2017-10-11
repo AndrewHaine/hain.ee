@@ -12,7 +12,7 @@
       color: $color--razzmatazz
 
       &::placeholder
-        color: $color--grey
+        color: darken($color--grey, 10)
         font-family: $font--body
         font-weight: 200
 
@@ -77,6 +77,10 @@ form.url-form
   position: relative
   width: 83%
   max-width: 600px
+  min-height: 300px
+
+.urlform__container
+  position: relative
 
 /* ----------- Form Errors -----------*/
 .form-error

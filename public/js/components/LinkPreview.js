@@ -1,20 +1,33 @@
 import React from 'react';
+import {CSSTransitionGroup} from 'react-transition-group';
 
 class LinkPreview extends React.Component
 {
   render() {
-    return (
-      <div className="shorten-preview">
+    const boxContainer =
+      <div key={this.props.processing} className="shorten-preview">
         <div className="shorten-preview__content">
           <div className="shorten-preview__image">
 
           </div>
-          <div className="shorten-preview__text">
-            <div className="shorten-preview__title"></div>
-            <a className="shorten-preview__link"></a>
+          <div className={this.props.urlData.title ? 'shorten-preview__text shorten-preview__text--active' : 'shorten-preview__text'}>
+            <div className="shorten-preview__title">{this.props.urlData.title}</div>
+            <a className="shorten-preview__link" title={this.props.urlData.title} href={this.props.urlData.link} rel="noopener" target="_blank">{this.props.link}</a>
           </div>
         </div>
-      </div>
+      </div>;
+
+    return (
+      <CSSTransitionGroup
+        transitionName="preview-box-animation"
+        transitionAppear={true}
+        transitionAppearTimeout={500}
+        transitionEnter={true}
+        transitionLeave={true}
+        transitionLeaveTimeout={300}
+        transitionEnterTimeout={500}>
+        {this.props.processing ? boxContainer : null}
+      </CSSTransitionGroup>
     );
   }
 }

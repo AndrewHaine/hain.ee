@@ -6,11 +6,13 @@
 .shorten-preview
   position: absolute
   top: 120%
-  display: none
+  z-index: 100
+  display: block
   width: 100%
   padding: 1rem
   border-radius: 5px
-  background: rgba($color__white, .75)
+  transform-origin: 50% 0
+  background: rgba($color__white, .8)
 
   &::before
     position: absolute
@@ -79,7 +81,7 @@
 
 .shorten-preview__title
   min-width: 70%
-  margin-bottom: .5em
+  margin-bottom: .8em
   font-weight: bold
   color: $color--alt-black
 
@@ -97,3 +99,29 @@
 
   &:hover
     text-decoration: none
+
+/* ----------- With data -----------*/
+.shorten-preview__text--active
+  .shorten-preview__title,
+  .shorten-preview__link
+    padding: 0 !important
+    background: transparent
+
+  .shorten-preview__title
+    margin-bottom: .4rem
+
+/* ----------- Animation in -----------*/
+@keyframes fadeAndFold
+  from
+    opacity: 0
+    transform: rotateX(45deg) translateY(-20px)
+
+  to
+    opacity: 1
+    transform: none
+
+.preview-box-animation-enter-active
+  animation: fadeAndFold .5s ease
+
+.preview-box-animation-leave-active
+  animation: fadeAndFold .3s ease-out reverse

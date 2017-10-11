@@ -53,6 +53,6 @@ exports.checkRedirect = async (req, res) => {
     await SavedLink.findOneAndUpdate({idString: req.params.id}, { $inc: { timesVisited: 1 }});
     res.redirect(301, redirectTo.url);
   } else {
-    res.sendStatus(404).render('errorPage', {status: '404'});
+    res.render('errorPage', {status: '404', errMessage: 'It looks like you\'ve found a url that doesn\'t exist yet, shorten some more URLs, go on - you know you want to'});
   }
 }

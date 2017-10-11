@@ -17,6 +17,8 @@ class URLForm extends React.Component {
       formErrors: {},
       currentUrlData: {}
     };
+
+    this._handleForm = this._handleForm.bind(this);
   }
 
   // We need to get the current csrf token for later ajax requests
@@ -35,7 +37,15 @@ class URLForm extends React.Component {
       return;
     }
 
-    this.requestShortenedURL(toBeShortened);
+    this.requestShortenedURL(toBeShortened)
+      .then(data => {
+        if(data.status !== 200) {
+          this.setState({processing: false, formErrors: {status: true, message: 'Server Error, there was a problem on our end :\'('}});
+        }
+      })
+      .catch(e => {
+        this.setState({formErrors: {status: true, message: e.message}});
+      });
   }
 
   _validateForm() {
@@ -57,7 +67,7 @@ class URLForm extends React.Component {
   }
 
   requestShortenedURL(url) {
-    fetch('/addURL', {
+    return fetch('/addURL', {
       credentials: 'same-origin',
       method: 'POST',
       headers: {
@@ -82,7 +92,7 @@ class URLForm extends React.Component {
             <ShortenButton processing={this.state.processing} />
           </div>
         </form>
-        <LinkPreview processing={this.state.processing} urlData={this.state.currentUrlData} />
+        <LinkPreview processing={this.state.processing} urlData={this.state.currentUrlData} processing={this.state.processing} />
       </div>
     );
   }
