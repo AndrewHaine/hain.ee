@@ -56,6 +56,15 @@
     width: 80px
     height: 80px
 
+/* ----------- Animation -----------*/
+@keyframes leftToRight
+  from
+    left: -100%
+
+  to
+    left: 100%
+
+
 /* ----------- Text -----------*/
 
 .shorten-preview__text
@@ -74,14 +83,29 @@
 
 .shorten-preview__title,
 .shorten-preview__link
+  position: relative
+  overflow: hidden
   display: block
   padding: .4em
   background: $color__grey
   min-height: 1em
 
+  &::before
+    position: absolute
+    display: block
+    top: 0
+    left: 0
+    width: 50%
+    height: 100%
+    content: ''
+    background-image: linear-gradient(90deg, $color__grey 0%, darken($color__grey, 5) 50%, $color__grey 100%)
+    animation: leftToRight 1.4s ease-in-out infinite
+
 .shorten-preview__title
+  overflow: hidden
   min-width: 70%
   margin-bottom: .8em
+  line-height: 1.35
   font-weight: bold
   color: $color--alt-black
 
@@ -106,6 +130,9 @@
   .shorten-preview__link
     padding: 0 !important
     background: transparent
+
+    &::before
+      display: none
 
   .shorten-preview__title
     margin-bottom: .4rem

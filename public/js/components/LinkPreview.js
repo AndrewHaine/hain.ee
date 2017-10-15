@@ -12,7 +12,7 @@ class LinkPreview extends React.Component
           </div>
           <div className={this.props.urlData.title ? 'shorten-preview__text shorten-preview__text--active' : 'shorten-preview__text'}>
             <div className="shorten-preview__title">{this.props.urlData.title}</div>
-            <a className="shorten-preview__link" title={this.props.urlData.title} href={this.props.urlData.link} rel="noopener" target="_blank">{this.props.link}</a>
+            <a className="shorten-preview__link" title={this.props.urlData.title} href={this.props.urlData.url} rel="noopener" target="_blank">{this.props.urlData.url}</a>
           </div>
         </div>
       </div>;

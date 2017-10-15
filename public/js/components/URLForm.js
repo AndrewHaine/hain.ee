@@ -29,7 +29,7 @@ class URLForm extends React.Component {
 
   _handleForm(e) {
     e.preventDefault();
-    const toBeShortened = this.url.value;
+    let toBeShortened = this.url.value;
     this.setState({processing: true});
 
     if(!this._validateForm()) {
@@ -37,10 +37,19 @@ class URLForm extends React.Component {
       return;
     }
 
+    toBeShortened = this._validateForm();
+
     this.requestShortenedURL(toBeShortened)
       .then(data => {
         if(data.status !== 200) {
-          this.setState({processing: false, formErrors: {status: true, message: 'Server Error, there was a problem on our end :\'('}});
+          data.text().then(error => {
+            this.setState({processing: false, formErrors: {status: true, message: error}});
+          });
+        } else {
+          data.json().then(body => {
+            console.log(body);
+            this.setState({currentUrlData: body});
+          });
         }
       })
       .catch(e => {
@@ -58,8 +67,30 @@ class URLForm extends React.Component {
       });
       return false;
     }
+
+    const validURL = this._validateURL(this.url.value);
+
+    if(!validURL) {
+      this.setState({
+        formErrors: {
+          status: true,
+          message: 'Enter a valid URL'
+        }
+      });
+      return false;
+    }
+
     this.setState({formErrors: {}});
-    return true;
+    return validURL;
+  }
+
+  _validateURL(url) {
+    let newRL = url;
+    if(!newRL.match(/^http(s?):\/\//)) {
+      newRL = `http://${newRL}`;
+    }
+
+    return newRL;
   }
 
   _getCSRFCookie() {
@@ -71,6 +102,7 @@ class URLForm extends React.Component {
       credentials: 'same-origin',
       method: 'POST',
       headers: {
+        'set-cookie': Cookie.get('_csrf'),
         'csrf-token': this.state.csrfToken,
         'Content-Type': 'application/json; charset=UTF-8'
       },
@@ -85,7 +117,7 @@ class URLForm extends React.Component {
           <input type="hidden" name="_csrf" value={this.state.csrfToken} />
           <div className="field text">
             <label htmlFor="url">Enter your URL</label>
-            <input ref={input => this.url = input} type="text" onChange={() => this.setState({formErrors: {}})} name="url" placeholder="Enter a URL" />
+            <input ref={input => this.url = input} type="text" onChange={() => this.setState({formErrors: {}, processing: false, currentUrlData: {}})} name="url" placeholder="Enter a URL" />
             <FormError erroring={this.state.formErrors}  />
           </div>
           <div className="form__actions">
