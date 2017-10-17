@@ -61,6 +61,10 @@ const getNewImage = (req, res, url) => {
     const unsplashRequest = http.get(url, res => {
       res.setEncoding('utf8');
 
+      if(res.statusCode !== 200) {
+        reject(new Error(res.statusMessage));
+      }
+
       res.on('data', (imageData) => {
 
         rawData += imageData;

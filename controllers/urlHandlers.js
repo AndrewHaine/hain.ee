@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const SavedLink = mongoose.model('SavedLink');
 const randStr = require('randomstring');
+const {URL} = require('url');
 const parseDomain = require('parse-domain');
 const request = require('request');
 const cheerio = require('cheerio');
@@ -39,7 +40,24 @@ const _getURLMeta = async (url) => {
       if(!err) {
         const $ = cheerio.load(html);
         const title = $('title').text();
-        resolve({title: title});
+
+        // Select an image to represent this page
+        let imgSrc;
+        if($('link[rel="apple-touch-icon"]').length) {
+          imgSrc = $('link[rel="apple-touch-icon"]').attr('href');
+        } else if ($('meta[name="og:image"]').length) {
+          imgSrc = $('meta[name="og:image"]').attr('content');
+        } else if($('link[rel="icon"]')) {
+          imgSrc = $('link[rel="icon"]').attr('href');
+        }
+
+        // If the image src is relative to the site root we need to include the domain
+        if(imgSrc && imgSrc.match(/^\//)) {
+          console.log('Hello');
+          imgSrc = new URL(imgSrc, url);
+        }
+
+        resolve({title: title, imgSrc: imgSrc || false});
       } else {
         reject('Page not found');
       }
@@ -49,13 +67,26 @@ const _getURLMeta = async (url) => {
 
 exports.addURL = async (req, res) => {
 
+  let targetURL = req.body.url;
+
+  // If no url has been passed return an error
+  if(!targetURL) {
+    return res.status(400).send('Please enter a URL to shorten').end();
+  }
+
+  // If no http(s) prefix is set add one - Required for 301 redirects later
+  if(!targetURL.match(/^http(s?):\/\//)) {
+    targetURL = `http://${targetURL}`;
+  }
+
   // Check the given url contains a valid tld
-  const validTLD = parseDomain(req.body.url) && parseDomain(req.body.url).tld;
+  const validTLD = parseDomain(targetURL) && parseDomain(targetURL).tld;
   if(!validTLD) {
     return res.status(400).send('Unable to shorten link, Please enter a valid URL').end();
   }
 
-  let toReturn = {url: '', title: '', idString: ''};
+
+  let toReturn = {url: '', title: '', imgSrc: '', idString: ''};
 
   // Scrape the given webpage for some nice values
   try {

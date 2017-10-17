@@ -41,11 +41,27 @@
 
 /* ----------- Image -----------*/
 .shorten-preview__image
+  position: relative
   display: none
   flex-shrink: 0
   width: 65px
   height: 65px
   background: $color--grey
+  background-size: contain
+  background-position: 50%
+  overflow: hidden
+
+  &::before
+    position: absolute
+    display: block
+    top: 0
+    left: 0
+    width: 50%
+    height: 100%
+    content: ''
+    opacity: .5
+    background-image: linear-gradient(90deg, $color__grey 0%, darken($color__grey, 5) 50%, $color__grey 100%)
+    animation: leftToRight 1.4s ease-in-out infinite
 
 @include respond(375px)
   .shorten-preview__image
@@ -100,6 +116,7 @@
     content: ''
     background-image: linear-gradient(90deg, $color__grey 0%, darken($color__grey, 5) 50%, $color__grey 100%)
     animation: leftToRight 1.4s ease-in-out infinite
+    animation-delay: .4s
 
 .shorten-preview__title
   overflow: hidden
@@ -125,11 +142,12 @@
     text-decoration: none
 
 /* ----------- With data -----------*/
-.shorten-preview__text--active
+.shorten-preview__content--active
   .shorten-preview__title,
-  .shorten-preview__link
+  .shorten-preview__link,
+  .shorten-preview__image
     padding: 0 !important
-    background: transparent
+    background-color: transparent
 
     &::before
       display: none

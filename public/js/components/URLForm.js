@@ -29,16 +29,19 @@ class URLForm extends React.Component {
 
   _handleForm(e) {
     e.preventDefault();
-    let toBeShortened = this.url.value;
-    this.setState({processing: true});
 
-    if(!this._validateForm()) {
-      this.setState({processing: false});
+    let toBeShortened = this.url.value;
+
+    // Check that a url was entered
+    if(!toBeShortened) {
+      this.setState({formErrors: {status: true, message: 'Please enter a URL to shorten'}});
       return;
     }
 
-    toBeShortened = this._validateForm();
+    // Show the preview box
+    this.setState({processing: true});
 
+    // Make the request to the backend
     this.requestShortenedURL(toBeShortened)
       .then(data => {
         if(data.status !== 200) {
@@ -47,50 +50,13 @@ class URLForm extends React.Component {
           });
         } else {
           data.json().then(body => {
-            console.log(body);
-            this.setState({currentUrlData: body});
+            this.setState({currentUrlData: body, processing: !this.state.processing});
           });
         }
       })
       .catch(e => {
         this.setState({formErrors: {status: true, message: e.message}});
       });
-  }
-
-  _validateForm() {
-    if(!this.url.value || !this.url.value.trim()) {
-      this.setState({
-        formErrors: {
-          status: true,
-          message: 'Enter a valid URL'
-        }
-      });
-      return false;
-    }
-
-    const validURL = this._validateURL(this.url.value);
-
-    if(!validURL) {
-      this.setState({
-        formErrors: {
-          status: true,
-          message: 'Enter a valid URL'
-        }
-      });
-      return false;
-    }
-
-    this.setState({formErrors: {}});
-    return validURL;
-  }
-
-  _validateURL(url) {
-    let newRL = url;
-    if(!newRL.match(/^http(s?):\/\//)) {
-      newRL = `http://${newRL}`;
-    }
-
-    return newRL;
   }
 
   _getCSRFCookie() {
@@ -121,7 +87,7 @@ class URLForm extends React.Component {
             <FormError erroring={this.state.formErrors}  />
           </div>
           <div className="form__actions">
-            <ShortenButton processing={this.state.processing} />
+            <ShortenButton processing={this.state.processing} urlData={this.state.currentUrlData} />
           </div>
         </form>
         <LinkPreview processing={this.state.processing} urlData={this.state.currentUrlData} processing={this.state.processing} />

@@ -116,7 +116,8 @@ const conf = {
   devtool: 'source-map',
   output: {
     path: path.resolve(__dirname, 'public', 'dist'),
-    filename: 'scripts.min.js'
+    filename: 'scripts.min.js',
+    publicPath: '/dist/'
   },
   module: {
     rules: [javascript, css, svg]
