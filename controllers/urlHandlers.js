@@ -34,30 +34,55 @@ const _addNewLink = async (url, idString = randStr.generate(7)) => {
   return {url: url, idString: idString};
 }
 
+
+/**
+  Possible Enhancement: Move this into a separate ajax request
+  so that we're not waiting on this to return the shortened url
+**/
 const _getURLMeta = async (url) => {
   return new Promise((resolve, reject) => {
     request(url, (err, resp, html) => {
-      if(!err) {
-        const $ = cheerio.load(html);
+      if(!err && resp.statusCode === 200) {
+        const $ = cheerio.load(html, { xmlMode: true });
         const title = $('title').text();
 
         // Select an image to represent this page
         let imgSrc;
-        if($('link[rel="apple-touch-icon"]').length) {
-          imgSrc = $('link[rel="apple-touch-icon"]').attr('href');
-        } else if ($('meta[name="og:image"]').length) {
-          imgSrc = $('meta[name="og:image"]').attr('content');
-        } else if($('link[rel="icon"]')) {
-          imgSrc = $('link[rel="icon"]').attr('href');
-        }
+
+        // A list of possible images to check
+        const possibleImages = [
+          {
+            'selector': $('link[rel="apple-touch-icon"]'),
+            'attribute': 'href'
+          },
+          {
+            selector: $('meta[property="og:image"]'),
+            attribute: 'content'
+          },
+          {
+            selector: $('link[rel="icon shortcut"]'),
+            attribute: 'href'
+          },
+          {
+            selector: $('link[rel="icon"]'),
+            attribute: 'href'
+          }
+        ];
+
+        let foundImage = false;
+        possibleImages.forEach(tag => {
+          if(tag.selector.length && !foundImage) {
+            imgSrc = tag.selector.attr(tag.attribute);
+            foundImage = true;
+          }
+        });
 
         // If the image src is relative to the site root we need to include the domain
         if(imgSrc && imgSrc.match(/^\//)) {
-          console.log('Hello');
           imgSrc = new URL(imgSrc, url);
         }
 
-        resolve({title: title, imgSrc: imgSrc || false});
+        resolve({title: title || url, imgSrc: imgSrc || false});
       } else {
         reject('Page not found');
       }
@@ -68,6 +93,7 @@ const _getURLMeta = async (url) => {
 exports.addURL = async (req, res) => {
 
   let targetURL = req.body.url;
+  let toReturn = {url: '', title: '', imgSrc: '', idString: ''};
 
   // If no url has been passed return an error
   if(!targetURL) {
@@ -85,21 +111,17 @@ exports.addURL = async (req, res) => {
     return res.status(400).send('Unable to shorten link, Please enter a valid URL').end();
   }
 
-
-  let toReturn = {url: '', title: '', imgSrc: '', idString: ''};
-
   // Scrape the given webpage for some nice values
   try {
-    const urlMeta = await _getURLMeta(req.body.url);
+    const urlMeta = await _getURLMeta(targetURL);
     if(urlMeta) Object.assign(toReturn, urlMeta);
   } catch(err) {
-    toReturn.title = req.body.url;
+    toReturn.title = targetURL;
   }
 
 
-
   // Check is this url has already been saved
-  const checkExisting = await _doLookup({url: req.body.url});
+  const checkExisting = await _doLookup({url: targetURL});
 
   if(checkExisting) {
     Object.assign(toReturn, checkExisting);
@@ -109,7 +131,7 @@ exports.addURL = async (req, res) => {
   // If no entry exists for the given url, create a new one
   let idString = req.body.customString || randStr.generate(7);
 
-  const newURL = await _addNewLink(req.body.url);
+  const newURL = await _addNewLink(targetURL);
 
   Object.assign(toReturn, newURL);
   res.json(toReturn).end();

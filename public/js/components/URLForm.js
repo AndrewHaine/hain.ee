@@ -13,6 +13,7 @@ class URLForm extends React.Component {
 
     this.state = {
       processing: false,
+      showPreviewBox: false,
       csrfToken: '',
       formErrors: {},
       currentUrlData: {}
@@ -39,18 +40,18 @@ class URLForm extends React.Component {
     }
 
     // Show the preview box
-    this.setState({processing: true});
+    this.setState({processing: true, showPreviewBox: true});
 
     // Make the request to the backend
     this.requestShortenedURL(toBeShortened)
       .then(data => {
         if(data.status !== 200) {
           data.text().then(error => {
-            this.setState({processing: false, formErrors: {status: true, message: error}});
+            this.setState({processing: false, showPreviewBox: false, formErrors: {status: true, message: error}});
           });
         } else {
           data.json().then(body => {
-            this.setState({currentUrlData: body, processing: !this.state.processing});
+            this.setState({currentUrlData: body, processing: false, showPreviewBox: true});
           });
         }
       })
@@ -83,14 +84,14 @@ class URLForm extends React.Component {
           <input type="hidden" name="_csrf" value={this.state.csrfToken} />
           <div className="field text">
             <label htmlFor="url">Enter your URL</label>
-            <input ref={input => this.url = input} type="text" onChange={() => this.setState({formErrors: {}, processing: false, currentUrlData: {}})} name="url" placeholder="Enter a URL" />
+            <input ref={input => this.url = input} type="text" onChange={() => this.setState({formErrors: {}, processing: false, showPreviewBox: false, currentUrlData: {}})} name="url" placeholder="Enter a URL" />
             <FormError erroring={this.state.formErrors}  />
           </div>
           <div className="form__actions">
             <ShortenButton processing={this.state.processing} urlData={this.state.currentUrlData} />
           </div>
         </form>
-        <LinkPreview processing={this.state.processing} urlData={this.state.currentUrlData} processing={this.state.processing} />
+        <LinkPreview processing={this.state.processing} urlData={this.state.currentUrlData} processing={this.state.processing} showPreviewBox={this.state.showPreviewBox} />
       </div>
     );
   }
