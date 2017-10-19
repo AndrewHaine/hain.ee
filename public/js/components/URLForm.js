@@ -1,6 +1,7 @@
 // Dependencies
 import React from 'react';
 import Cookie from 'js-cookie';
+import RandString from 'randomstring';
 
 // My Components
 import ShortenButton from './ShortenButton';
@@ -16,7 +17,8 @@ class URLForm extends React.Component {
       showPreviewBox: false,
       csrfToken: '',
       formErrors: {},
-      currentUrlData: {}
+      currentUrlData: {},
+      currentRequestKey: ''
     };
 
     this._handleForm = this._handleForm.bind(this);
@@ -40,24 +42,40 @@ class URLForm extends React.Component {
     }
 
     // Show the preview box
-    this.setState({processing: true, showPreviewBox: true});
+    this.setState({processing: true, showPreviewBox: true, currentRequestKey: RandString.generate(10)}, () => {
+      // Make the request to get a shortened url
+      this.requestShortenedURL(toBeShortened)
+        .then(data => {
+          if(data.status === 200) {
+            data.json().then(body => {
+              this.setState({ processing: false, showPreviewBox: true});
+            });
+          } else {
+            data.text().then(error => {
+              this.setState({processing: false, showPreviewBox: false, formErrors: {status: true, message: error}});
+            });
+          }
+        })
+        .catch(e => {
+          this.setState({showPreviewBox: false, formErrors: {status: true, message: e.message}});
+        });
 
-    // Make the request to the backend
-    this.requestShortenedURL(toBeShortened)
-      .then(data => {
-        if(data.status !== 200) {
-          data.text().then(error => {
-            this.setState({processing: false, showPreviewBox: false, formErrors: {status: true, message: error}});
-          });
-        } else {
-          data.json().then(body => {
-            this.setState({currentUrlData: body, processing: false, showPreviewBox: true});
-          });
-        }
-      })
-      .catch(e => {
-        this.setState({formErrors: {status: true, message: e.message}});
-      });
+      // Make the request to get some url data
+      this.requestURLMeta(toBeShortened)
+        .then(data => {
+          if(data.status === 200) {
+            data.json().then(body => {
+              if(body.requestKey === this.state.currentRequestKey) {
+                this.setState({currentUrlData: body, showPreviewBox: !!body.url});
+              }
+            });
+          } else {
+            data.text().then(error => {
+              this.setState({processing: false, showPreviewBox: false});
+            });
+          }
+        });
+    });
   }
 
   _getCSRFCookie() {
@@ -69,11 +87,22 @@ class URLForm extends React.Component {
       credentials: 'same-origin',
       method: 'POST',
       headers: {
-        'set-cookie': Cookie.get('_csrf'),
         'csrf-token': this.state.csrfToken,
         'Content-Type': 'application/json; charset=UTF-8'
       },
-      body: JSON.stringify({'url': url})
+      body: JSON.stringify({'url': url, requestKey: this.state.currentRequestKey})
+    });
+  }
+
+  requestURLMeta(url) {
+    return fetch('/getURLMeta', {
+      credentials: 'same-origin',
+      method: 'POST',
+      headers: {
+        'csrf-token': this.state.csrfToken,
+        'Content-Type': 'application/json; charset=UTF-8'
+      },
+      body: JSON.stringify({'url': url, requestKey: this.state.currentRequestKey})
     });
   }
 

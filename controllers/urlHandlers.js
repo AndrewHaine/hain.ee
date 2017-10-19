@@ -11,6 +11,14 @@ const _doLookup = async (params = {}) => {
   return foundURL ? {url: foundURL.url, idString: foundURL.idString} : false;
 };
 
+// If no http(s) prefix is set add one - Required for 301 redirects later
+const _urlFix = (url) => {
+  if(!url.match(/^http(s?):\/\//)) {
+    url = `http://${url}`;
+  }
+  return url;
+};
+
 const _addNewLink = async (url, idString = randStr.generate(7)) => {
 
   // Stop duplicate lookup strings
@@ -35,11 +43,7 @@ const _addNewLink = async (url, idString = randStr.generate(7)) => {
 }
 
 
-/**
-  Possible Enhancement: Move this into a separate ajax request
-  so that we're not waiting on this to return the shortened url
-**/
-const _getURLMeta = async (url) => {
+const _getPageMeta = async (url) => {
   return new Promise((resolve, reject) => {
     request(url, (err, resp, html) => {
       if(!err && resp.statusCode === 200) {
@@ -84,41 +88,34 @@ const _getURLMeta = async (url) => {
 
         resolve({title: title || url, imgSrc: imgSrc || false});
       } else {
-        reject('Page not found');
+        reject(false);
       }
     });
   });
 };
 
+
+/*
+  Called to add a new URL to the system
+*/
 exports.addURL = async (req, res) => {
 
   let targetURL = req.body.url;
-  let toReturn = {url: '', title: '', imgSrc: '', idString: ''};
+  let toReturn = {url: '', idString: '', requestKey: req.body.requestKey};
 
   // If no url has been passed return an error
   if(!targetURL) {
     return res.status(400).send('Please enter a URL to shorten').end();
   }
 
-  // If no http(s) prefix is set add one - Required for 301 redirects later
-  if(!targetURL.match(/^http(s?):\/\//)) {
-    targetURL = `http://${targetURL}`;
-  }
+  // Fix url
+  targetURL = _urlFix(targetURL);
 
   // Check the given url contains a valid tld
   const validTLD = parseDomain(targetURL) && parseDomain(targetURL).tld;
   if(!validTLD) {
     return res.status(400).send('Unable to shorten link, Please enter a valid URL').end();
   }
-
-  // Scrape the given webpage for some nice values
-  try {
-    const urlMeta = await _getURLMeta(targetURL);
-    if(urlMeta) Object.assign(toReturn, urlMeta);
-  } catch(err) {
-    toReturn.title = targetURL;
-  }
-
 
   // Check is this url has already been saved
   const checkExisting = await _doLookup({url: targetURL});
@@ -137,6 +134,38 @@ exports.addURL = async (req, res) => {
   res.json(toReturn).end();
 };
 
+
+/*
+  Called to scrape the page given in the URL and return some data
+*/
+exports.getURLMeta = async (req, res) => {
+  const url = req.body.url;
+
+  let targetURL = _urlFix(url);
+
+  let toReturn = {title: '', imgSrc: '', url: targetURL, requestKey: req.body.requestKey};
+
+  // Scrape the given webpage for some nice values
+  try {
+    const urlMeta = await _getPageMeta(targetURL);
+    if(urlMeta) {
+      Object.assign(toReturn, urlMeta)
+    } else {
+      return res.status(404).end();
+    };
+  } catch(err) {
+    toReturn.title = targetURL;
+  }
+
+  return res.json(toReturn).end();
+
+};
+
+
+/*
+  Checks the request coming in for a valid id String and tries
+  to find a matching url
+*/
 exports.checkRedirect = async (req, res) => {
   const redirectTo = await _doLookup({idString: req.params.id});
   if(redirectTo) {

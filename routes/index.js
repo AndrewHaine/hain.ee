@@ -7,6 +7,7 @@ const urlHandlers = require('../controllers/urlHandlers');
 router.get('/', homePageController.index);
 
 router.post('/addURL', urlHandlers.addURL);
+router.post('/getURLMeta', urlHandlers.getURLMeta);
 router.get('/:id', urlHandlers.checkRedirect);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+const helmet = require('helmet');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
@@ -16,6 +17,9 @@ app.set('view engine', 'pug');
 
 // Include our static assets
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Always wear a helmet
+app.use(helmet());
 
 // Body parser
 app.use(bodyParser.json());

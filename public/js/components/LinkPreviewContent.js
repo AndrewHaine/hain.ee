@@ -8,7 +8,7 @@ class LinkPreviewContent extends React.Component {
 
     const limitedTitle = limit(this.props.urlData.title, 50) || '';
     const limitedURL = limit(this.props.urlData.url, 30) || '';
-    const backgroundImage = this.props.urlData.idString ? `url('${this.props.urlData.imgSrc || '/images/h-icon.svg'}')` : '';
+    const backgroundImage = this.props.urlData.url ? `url('${this.props.urlData.imgSrc || '/images/h-icon.svg'}')` : '';
 
     return (
       <div className={this.props.urlData.url ? 'shorten-preview__content shorten-preview__content--active' : 'shorten-preview__content'}>
