@@ -1,5 +1,7 @@
 extends layout
 
 block content
-  h1= `Uh Oh!`
-  .page__content=`${errMessage || 'There was an error'}`
+  .content__errorPage
+    h1= `${status || 'Uh Oh!'}`
+    .page__content=`${errMessage || 'There was an error'}`
+    a(href="/" class="button button--razmatazz") Take me home

@@ -7,6 +7,7 @@ const csrf = require('csurf');
 const bodyParser = require('body-parser');
 const routes = require('./routes/index');
 const backgroundImg = require('./middleware/backgroundImg');
+const errorHandlers = require('./middleware/errHandlers');
 
 const app = express();
 
@@ -36,7 +37,7 @@ app.use(session({
 app.use(cookieParser());
 
 // CSRF protection on forms
-app.use(csrf({cookie: false})); // Turned off for now
+app.use(csrf({cookie: false}));
 
 // Middleware for adding standard functions for template use
 app.use((req, res, next) => {
@@ -49,5 +50,10 @@ app.use(backgroundImg);
 
 // Include our custom routes
 app.use('/', routes);
+
+// If no routes are matched throw a 404
+app.use(errorHandlers.noRouteMatch);
+
+app.use(errorHandlers.renderErrorPage)
 
 module.exports = app;

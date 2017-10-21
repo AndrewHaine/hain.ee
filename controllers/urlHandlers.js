@@ -171,12 +171,13 @@ exports.getURLMeta = async (req, res) => {
   Checks the request coming in for a valid id String and tries
   to find a matching url
 */
-exports.checkRedirect = async (req, res) => {
+exports.checkRedirect = async (req, res, next) => {
   const redirectTo = await _doLookup({idString: req.params.id});
   if(redirectTo) {
     await SavedLink.findOneAndUpdate({idString: req.params.id}, { $inc: { timesVisited: 1 }});
     res.redirect(301, redirectTo.url);
   } else {
-    res.render('errorPage', {status: '404', errMessage: 'It looks like you\'ve found a url that doesn\'t exist yet, shorten some more URLs, go on - you know you want to'});
+    // If no match is found we can pass this off to the 'not found' middleware to render an error page
+    next();
   }
 }
