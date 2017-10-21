@@ -13,12 +13,13 @@ class URLForm extends React.Component {
     super();
 
     this.state = {
-      processing: false,
-      showPreviewBox: false,
+      currentRequestKey: '',
+      currentUrlData: {},
       csrfToken: '',
       formErrors: {},
-      currentUrlData: {},
-      currentRequestKey: ''
+      processing: false,
+      rootURL: '',
+      showPreviewBox: false
     };
 
     this._handleForm = this._handleForm.bind(this);
@@ -27,7 +28,7 @@ class URLForm extends React.Component {
   // We need to get the current csrf token for later ajax requests
   componentWillMount() {
     const token = document.querySelector('meta[name="mystery-token"]').getAttribute('content');
-    this.setState({csrfToken: token});
+    this.setState({csrfToken: token, rootURL: window.location.origin});
   }
 
   _handleForm(e) {
@@ -38,17 +39,22 @@ class URLForm extends React.Component {
     // Check that a url was entered
     if(!toBeShortened) {
       this.setState({formErrors: {status: true, message: 'Please enter a URL to shorten'}});
-      return;
+      return false;
     }
 
-    // Show the preview box
+    /*
+      Kick off the ajax requests to the back end and show the preview box,
+      We need to create a request key to ensure delayed requests don't override more recent data
+      setState is async so the fetches are inside a callback ensuring we always have the correct request key
+    */
     this.setState({processing: true, showPreviewBox: true, currentRequestKey: RandString.generate(10)}, () => {
+
       // Make the request to get a shortened url
       this.requestShortenedURL(toBeShortened)
         .then(data => {
           if(data.status === 200) {
             data.json().then(body => {
-              this.setState({ processing: false, showPreviewBox: true});
+              this.setState({ processing: false, showPreviewBox: true, currentUrlData: Object.assign(this.state.currentUrlData, body)});
             });
           } else {
             data.text().then(error => {
@@ -66,7 +72,7 @@ class URLForm extends React.Component {
           if(data.status === 200) {
             data.json().then(body => {
               if(body.requestKey === this.state.currentRequestKey) {
-                this.setState({currentUrlData: body, showPreviewBox: !!body.url});
+                this.setState({currentUrlData: Object.assign(this.state.currentUrlData, body), showPreviewBox: !!body.url});
               }
             });
           } else {
@@ -117,7 +123,7 @@ class URLForm extends React.Component {
             <FormError erroring={this.state.formErrors}  />
           </div>
           <div className="form__actions">
-            <ShortenButton processing={this.state.processing} urlData={this.state.currentUrlData} />
+            <ShortenButton processing={this.state.processing} urlData={this.state.currentUrlData} rootURL={this.state.rootURL} />
           </div>
         </form>
         <LinkPreview processing={this.state.processing} urlData={this.state.currentUrlData} processing={this.state.processing} showPreviewBox={this.state.showPreviewBox} />

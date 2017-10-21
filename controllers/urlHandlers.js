@@ -39,7 +39,7 @@ const _addNewLink = async (url, idString = randStr.generate(7)) => {
     timesVisited: 0
   }).save()
 
-  return {url: url, idString: idString};
+  return {idString: idString};
 }
 
 
@@ -82,7 +82,7 @@ const _getPageMeta = async (url) => {
         });
 
         // If the image src is relative to the site root we need to include the domain
-        if(imgSrc && imgSrc.match(/^\//)) {
+        if(imgSrc && imgSrc.match(/^\/|^\./)) {
           imgSrc = new URL(imgSrc, url);
         }
 
@@ -101,12 +101,16 @@ const _getPageMeta = async (url) => {
 exports.addURL = async (req, res) => {
 
   let targetURL = req.body.url;
-  let toReturn = {url: '', idString: '', requestKey: req.body.requestKey};
+  let requestKey = req.body.requestKey;
 
-  // If no url has been passed return an error
+  // If no url or no request key has been passed return an error
   if(!targetURL) {
     return res.status(400).send('Please enter a URL to shorten').end();
+  } else if (!requestKey) {
+    return res.status(403).send('There was an error making the request').end()
   }
+
+  let toReturn = {idString: '', requestKey: requestKey};
 
   // Fix url
   targetURL = _urlFix(targetURL);
@@ -121,7 +125,7 @@ exports.addURL = async (req, res) => {
   const checkExisting = await _doLookup({url: targetURL});
 
   if(checkExisting) {
-    Object.assign(toReturn, checkExisting);
+    Object.assign(toReturn, {idString: checkExisting.idString});
     return res.json(toReturn).end();
   }
 
@@ -131,6 +135,7 @@ exports.addURL = async (req, res) => {
   const newURL = await _addNewLink(targetURL);
 
   Object.assign(toReturn, newURL);
+
   res.json(toReturn).end();
 };
 
