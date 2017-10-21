@@ -55,6 +55,9 @@ class URLForm extends React.Component {
           if(data.status === 200) {
             data.json().then(body => {
               this.setState({ processing: false, showPreviewBox: true, currentUrlData: Object.assign(this.state.currentUrlData, body)});
+
+              // Dump the shortened url back into the input
+              document.getElementById('url-input').value = `${this.state.rootURL}/${body.idString}`;
             });
           } else {
             data.text().then(error => {
@@ -119,7 +122,7 @@ class URLForm extends React.Component {
           <input type="hidden" name="_csrf" value={this.state.csrfToken} />
           <div className="field text">
             <label htmlFor="url">Enter your URL</label>
-            <input ref={input => this.url = input} type="text" onChange={() => this.setState({formErrors: {}, processing: false, showPreviewBox: false, currentUrlData: {}})} name="url" placeholder="Enter a URL" />
+            <input id='url-input' ref={input => this.url = input} type="text" onChange={() => this.setState({formErrors: {}, processing: false, showPreviewBox: false, currentUrlData: {}})} name="url" placeholder="Enter a URL" />
             <FormError erroring={this.state.formErrors}  />
           </div>
           <div className="form__actions">

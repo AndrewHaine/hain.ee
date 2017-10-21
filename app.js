@@ -6,7 +6,6 @@ const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 const bodyParser = require('body-parser');
 const routes = require('./routes/index');
-const helpers = require('./helpers/helpers');
 const backgroundImg = require('./middleware/backgroundImg');
 
 const app = express();
@@ -41,7 +40,6 @@ app.use(csrf({cookie: false})); // Turned off for now
 
 // Middleware for adding standard functions for template use
 app.use((req, res, next) => {
-  res.locals.h = helpers;
   res.locals.token = req.csrfToken();
   next();
 });
