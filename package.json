@@ -8,8 +8,8 @@
   },
   "main": "index.js",
   "scripts": {
-    "boot": "nodemon start.js",
-    "dev-boot": "NODE_ENV=development concurrently \"npm run boot\" \"webpack-dev-server\"",
+    "boot": "node start.js",
+    "dev-boot": "NODE_ENV=development concurrently \"nodemon start.js\" \"webpack-dev-server\"",
     "eject": "NODE_ENV=eject webpack --progress"
   },
   "nodemonConfig": {
