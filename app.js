@@ -20,7 +20,7 @@ app.set('view engine', 'pug');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Support /.well-known (required for adding SSL with certbot)
-app.use(express.static(path.join(__dirname, '.well-known'), {dotfiles: 'allow'}));
+app.use(express.static(path.join(__dirname, 'ssl'), {dotfiles: 'allow'}));
 
 // Always wear a helmet
 app.use(helmet());
