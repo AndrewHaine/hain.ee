@@ -53,6 +53,7 @@ app.use(csrf({cookie: false}));
 // Middleware for adding standard functions for template use
 app.use((req, res, next) => {
   res.locals.token = req.csrfToken();
+  res.locals.gaTrackingID = process.env.GA_TRACKING_CODE;
   next();
 });
 
