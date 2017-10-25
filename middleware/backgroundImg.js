@@ -6,6 +6,7 @@
   Dependencies
 */
 const http = require('https');
+const request = require('request').defaults({encoding: null});
 const cache = require('memory-cache');
 
 /**
@@ -38,14 +39,16 @@ module.exports = async (req, res, next) => {
   } else {
     try {
       const newImageData = await getNewImage(req, res, url);
+
       imageData = JSON.parse(newImageData);
+
     } catch (e) {
       console.error('Background Image Middleware Error: ' + e.message);
       imageData = defaultValues;
     }
   }
 
-  res.locals.backgroundImageUrl = imageData.urls.regular;
+  res.locals.backgroundImageUrl = imageData.encodedImage || imageData.urls.regular;
   res.locals.backgroundImageUserName = imageData.user.name;
   res.locals.backgroundImageUserUrl = imageData.user.links.html + unsplashUTM;
 
@@ -69,14 +72,36 @@ const getNewImage = (req, res, url) => {
 
         rawData += imageData;
 
-        cache.put(cacheKey, rawData, cacheDuration);
-
       });
-      res.on('end', () => resolve(rawData));
+      res.on('end', async () => {
+        rawData = JSON.parse(rawData);
+        rawData["encodedImage"] = await getRawImage(rawData.urls.regular);
+        rawData = JSON.stringify(rawData);
+        cache.put(cacheKey, rawData, cacheDuration);
+        resolve(rawData)
+      });
     });
 
     unsplashRequest.on('error', err => {
       reject(new Error(err));
     });
   })
-}
+};
+
+/**
+  Encode the image so it can be included in a data-url
+  The advantage of this is we can cache the value on the server
+  instead of every new user triggering a http request to unsplash
+*/
+const getRawImage = url => {
+  return new Promise((resolve, reject) => {
+    request.get(url, (err, resp, body) => {
+      if(!err && resp.statusCode === 200) {
+        const contentType = resp.headers['content-type'];
+        const encodedImage = new Buffer(body).toString('base64');
+        resolve(`data:${contentType};base64,${encodedImage}`);
+      }
+      reject(err);
+    })
+  });
+};
