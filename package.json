@@ -8,7 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "boot": "node start.js",
+    "boot": "NODE_ENV=production node start.js",
     "dev-boot": "NODE_ENV=development concurrently \"nodemon start.js\" \"webpack-dev-server\"",
     "eject": "NODE_ENV=eject webpack --progress"
   },
