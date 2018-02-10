@@ -35,12 +35,12 @@ function randomimg(options = {}) {
    */
   const {
     cacheKey = '__express__unsplash',
-    cacheDuration = 43200000,
-    unsplashID,
-    unsplashUTM
+      cacheDuration = 43200000,
+      unsplashID,
+      unsplashUTM
   } = options;
 
-  // If no default image was set use a previosly found one
+  // If no default image was set use a previously found one
   const defaultImage = {
     "urls": {
       "regular": "https://images.unsplash.com/photo-1500229285422-9508ce34dedc?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&w=1080&fit=max"
@@ -68,7 +68,7 @@ function randomimg(options = {}) {
     // Check the cache for stored image data
     const cachedImage = getCachedImageData(cacheKey);
 
-    if(cachedImage) {
+    if (cachedImage) {
 
       // If there was a stored image set the image data to this value
       imageData = cachedImage;
@@ -83,7 +83,7 @@ function randomimg(options = {}) {
         // cache the returned image data
         setCachedImageData(cacheKey, imageData, cacheDuration);
 
-      } catch(e) {
+      } catch (e) {
 
         // If all else fails use the default image
         imageData = defaultImage;

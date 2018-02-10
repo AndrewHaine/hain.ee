@@ -74,7 +74,7 @@ app.use((req, res, next) => {
 // Grab a background image for our app
 app.use(randomimg({
   unsplashID: process.env.UNSPLASH_APPID,
-  unsplashUTM: process.env.UNSPLASH_APPID
+  unsplashUTM: process.env.UNSPLASH_UTM
 }));
 
 // Include our custom routes

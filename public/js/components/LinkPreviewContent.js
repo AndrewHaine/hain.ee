@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Helpers
-import {limit} from '../helpers/helpers';
+import { limit } from '../helpers/helpers';
 
 class LinkPreviewContent extends React.Component {
   render() {

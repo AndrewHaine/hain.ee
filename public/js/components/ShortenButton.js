@@ -1,3 +1,4 @@
+import { copyToClipboard } from '../helpers/helpers';
 import React from 'react';
 
 class ShortenButton extends React.Component {
@@ -22,21 +23,14 @@ class ShortenButton extends React.Component {
     if(!idString) nextState.valueCopied = false;
   }
 
-  copyToClipboard(e) {
+  copyLink(e) {
+
     e.preventDefault();
-    const el = document.createElement('textarea');
-    el.value = this.state.valueToCopy;
 
-    document.body.appendChild(el);
-
-    el.focus();
-    el.setSelectionRange(0, el.value.length);
-
-    document.execCommand('copy');
-
-    document.body.removeChild(el);
+    copyToClipboard(this.state.valueToCopy);
 
     this.setState({valueCopied: !this.state.valueCopied});
+
   }
 
   render() {
@@ -44,7 +38,7 @@ class ShortenButton extends React.Component {
       return <button className="button__shorten button__shorten--processing">Working</button>;
     } else if (this.props.urlData.idString && this.props.urlData.idString !== '') {
       let buttonText = this.state.valueCopied ? 'Copied!' : 'Copy';
-      return <button className="button__shorten button__shorten--copy" onClick={(e) => this.copyToClipboard(e)}>{buttonText}</button>;
+      return <button className="button__shorten button__shorten--copy" onClick={(e) => this.copyLink(e)}>{buttonText}</button>;
     } else {
       return <button className="button__shorten">Shorten</button>;
     }
