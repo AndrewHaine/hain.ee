@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 const bodyParser = require('body-parser');
 const routes = require('./routes/index');
-const backgroundImg = require('./middleware/backgroundImg');
+const randomimg = require('./middleware/randomimg');
 const errorHandlers = require('./middleware/errHandlers');
 
 const app = express();
@@ -23,7 +23,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ssl'), {dotfiles: 'allow'}));
 
 // Always wear a helmet
-app.use(helmet());
+app.use(helmet({
+  hidePoweredBy: false
+}));
 
 // Body parser
 app.use(bodyParser.json());
@@ -72,7 +74,10 @@ app.use((req, res, next) => {
 });
 
 // Grab a background image for our app
-app.use(backgroundImg);
+app.use(randomimg({
+  unsplashID: process.env.UNSPLASH_APPID,
+  unsplashUTM: process.env.UNSPLASH_UTM
+}));
 
 // Include our custom routes
 app.use('/', routes);

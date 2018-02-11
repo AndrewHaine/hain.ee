@@ -1,3 +1,6 @@
+import {
+  copyToClipboard
+} from '../helpers/helpers';
 import React from 'react';
 
 class ShortenButton extends React.Component {
@@ -15,38 +18,33 @@ class ShortenButton extends React.Component {
 
     // Set the current shortened url
     let idString = nextProps.urlData.idString;
-    if(idString && idString != '') {
+    if (idString && idString != '') {
       nextState.valueToCopy = `${nextProps.rootURL}/${idString}`;
     }
 
-    if(!idString) nextState.valueCopied = false;
+    if (!idString) nextState.valueCopied = false;
   }
 
-  copyToClipboard(e) {
+  copyLink(e) {
+
     e.preventDefault();
-    const el = document.createElement('textarea');
-    el.value = this.state.valueToCopy;
 
-    document.body.appendChild(el);
+    copyToClipboard(this.state.valueToCopy);
 
-    el.focus();
-    el.setSelectionRange(0, el.value.length);
+    this.setState({
+      valueCopied: !this.state.valueCopied
+    });
 
-    document.execCommand('copy');
-
-    document.body.removeChild(el);
-
-    this.setState({valueCopied: !this.state.valueCopied});
   }
 
   render() {
-    if(this.props.processing) {
-      return <button className="button__shorten button__shorten--processing">Working</button>;
+    if (this.props.processing) {
+      return <button className = "button__shorten button__shorten--processing" > Working < /button>;
     } else if (this.props.urlData.idString && this.props.urlData.idString !== '') {
       let buttonText = this.state.valueCopied ? 'Copied!' : 'Copy';
-      return <button className="button__shorten button__shorten--copy" onClick={(e) => this.copyToClipboard(e)}>{buttonText}</button>;
+      return <button className = "button__shorten button__shorten--copy" onClick = {(e) => this.copyLink(e)} > {buttonText} < /button>;
     } else {
-      return <button className="button__shorten">Shorten</button>;
+      return <button className = "button__shorten" > Shorten < /button>;
     }
   }
 }

@@ -1,25 +1,40 @@
 const mongoose = require('mongoose');
 const SavedLink = mongoose.model('SavedLink');
 const randStr = require('randomstring');
-const {URL} = require('url');
+const { URL } = require('url');
 const parseDomain = require('parse-domain');
 const request = require('request');
 const cheerio = require('cheerio');
 
-const _doLookup = async (params = {}) => {
+/**
+ * Query the database for an existing url
+ * @param {Object} params Query parameters
+ * @returns {(Object | Boolean)}
+ */
+async function _doLookup (params = {}) {
   const foundURL = await SavedLink.findOne(params);
-  return foundURL ? {url: foundURL.url, idString: foundURL.idString} : false;
+  return foundURL ? { url: foundURL.url, idString: foundURL.idString } : false;
 };
 
-// If no http(s) prefix is set add one - Required for 301 redirects later
-const _urlFix = (url) => {
+/**
+ * Prepends http:// to urls that were provided without one
+ * @param {String} url URL to check
+ * @returns {String} the corrected url
+ */
+function _urlFix (url) {
   if(!url.match(/^http(s?):\/\//)) {
     url = `http://${url}`;
   }
   return url;
 };
 
-const _addNewLink = async (url, idString = randStr.generate(7)) => {
+/**
+ * Add a new link to the system
+ * @param {String} url the URL to add
+ * @param {String} idString the ID string to store this url against
+ * @returns {Object}
+ */
+async function _addNewLink (url, idString = randStr.generate(7)) {
 
   // Stop duplicate lookup strings
   let stringIsUnique = false;
@@ -42,8 +57,12 @@ const _addNewLink = async (url, idString = randStr.generate(7)) => {
   return {idString: idString};
 }
 
-
-const _getPageMeta = async (url) => {
+/**
+ * Make a request to a supplied webpage and get some bits and bobs for our frontend
+ * @param {String} url
+ * @returns {Promise}
+ */
+async function _getPageMeta (url) {
   return new Promise((resolve, reject) => {
     request(url, (err, resp, html) => {
       if(!err && resp.statusCode === 200) {
@@ -56,8 +75,8 @@ const _getPageMeta = async (url) => {
         // A list of possible images to check
         const possibleImages = [
           {
-            'selector': $('link[rel="apple-touch-icon"]'),
-            'attribute': 'href'
+            selector: $('link[rel="apple-touch-icon"]'),
+            attribute: 'href'
           },
           {
             selector: $('meta[property="og:image"]'),

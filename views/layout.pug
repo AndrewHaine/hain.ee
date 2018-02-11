@@ -1,24 +1,42 @@
 doctype html
 html(lang='en')
   head
-    meta(charset='utf-8')
+    meta(http-equiv="Content-Type" content="text/html")
     title=(pageTitle || 'Hainee | Save some bytes - shorten that URL!')
-    link(rel='stylesheet', href="/dist/styles.min.css")
+    meta(name='description', content='A url shortening app built with Node js and React')
+
+    link(href="https://fonts.googleapis.com/css?family=Fira+Sans:200,300,300i,400,400i,600,600i,700,700i|Pacifico", rel="stylesheet")
+    link(rel='stylesheet', href="dist/styles.min.css")
     meta(name="viewport", content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes")
     meta(name="mystery-token", content=`${csrfToken}`)
+
+    <!-- Open Graph Data -->
     meta(property="og:title" content="Hain.ee | Save some bytes, shorten that URL")
     meta(property="og:description" content="A url shortening app built with Node js and React")
-    meta(property="og:image" content="/images/share.png")
-    link(rel="icon", href="/images/favicon.ico")
+    meta(property="og:image" content="images/share.png")
     meta(property="og:url" content="https://hain.ee")
+
+    <!-- Twitter Cards -->
+    meta(property="twitter:title" content="Hain.ee | Save some bytes, shorten that URL")
+    meta(property="twitter:description" content="A url shortening app built with Node js and React")
     meta(property="twitter:card" content="summary")
-    link(rel="apple-touch-icon" content="/images/apple-touch-icon.png")
+    meta(property="twitter:site" content="@Andrew_Haine")
+    meta(property="twitter:creator" content="@Andrew_Haine")
+    meta(property="twitter:image" content="images/share.png")
+
+    <!-- Default Icons -->
+    link(rel="icon", href="images/favicon.ico")
+    link(rel="apple-touch-icon" content="images/apple-touch-icon.png")
+
+    <!-- Analytics -->
     script(async src=`https://www.googletagmanager.com/gtag/js?id=${gaTrackingID}`)
     script.
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', '#{gaTrackingID}');
+
+
   body(style=`background-image:url('${backgroundImageUrl}')`)
     .content
       block content
@@ -28,9 +46,10 @@ html(lang='en')
           a(rel='noopener', target="_blank", href="//www.andrewhaine.co.uk", title="Visit my website" class="footer__homesite") Andrew Haine
           a(class="footer__icon footer__icon--gh replace" href="//www.github.com/AndrewHaine/hain.ee", rel="noopener" target="_blank" title="View this project on Github") Github Repo
           a(class="footer__icon footer__icon--twitter replace" href="//www.twitter.com/Andrew_Haine" rel="noopener" target="_blank" title="Follow me on Twitter") Twitter
-        .footer__photo-credit Photo by 
+        .footer__photo-credit Photo by&nbsp;
           a(href=backgroundImageUserUrl, target="_blank")= backgroundImageUserName
           span &nbsp;/&nbsp;
           a(href="http://unsplash.com?utm_source=hain.ee&utm_medium=referral&utm_campaign=api-credit", target="_blank") Unsplash
     block scripts
-      script(src="/dist/scripts.min.js")
+      script(src="dist/vendors.min.js")
+      script(src="dist/main.min.js")
