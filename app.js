@@ -23,7 +23,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ssl'), {dotfiles: 'allow'}));
 
 // Always wear a helmet
-app.use(helmet());
+app.use(helmet({
+  hidePoweredBy: false
+}));
 
 // Body parser
 app.use(bodyParser.json());
