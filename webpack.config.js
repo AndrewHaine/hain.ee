@@ -13,9 +13,15 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 */
 
 const defineProduction = new webpack.DefinePlugin({'process.env': {NODE_ENV: JSON.stringify('production')}});
-const uglify = new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}});
+const uglify = new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}, minimize: true});
 const extractCss = new ExtractTextPlugin({filename: 'styles.min.css'});
 const hotReload = new webpack.HotModuleReplacementPlugin();
+const commonsChunk = new webpack.optimize.CommonsChunkPlugin({
+  name: 'vendors',
+  minChunks: function(module) {
+    return module.context && module.context.includes("node_modules");
+  }
+});
 
 /*
   Loaders
@@ -90,14 +96,17 @@ const devServer = {
   inline: true,
   port: 3202,
   proxy: {
-    '*': 'http://localhost:3200'
+    '*': {
+      target: 'https://localhost:3204',
+      protocol: 'https'
+    }
   },
   publicPath: '/dist/'
 };
 
 let plugins;
 if(process.env.NODE_ENV === 'eject') {
-  plugins = [defineProduction, uglify, extractCss, hotReload];
+  plugins = [defineProduction, uglify, extractCss, hotReload, commonsChunk];
 } else {
   plugins = [hotReload];
 }
@@ -109,14 +118,14 @@ if(process.env.NODE_ENV === 'eject') {
 const conf = {
   entry: process.env.NODE_ENV === 'eject' ? './public/js/index.js' : [
     'react-hot-loader/patch',
-    'webpack-dev-server/client?http://localhost:3202',
+    'webpack-dev-server/client?https://localhost:3204',
     'webpack/hot/only-dev-server',
     './public/js/index.js',
   ],
   devtool: 'source-map',
   output: {
     path: path.resolve(__dirname, 'public', 'dist'),
-    filename: 'scripts.min.js',
+    filename: '[name].min.js',
     publicPath: '/dist/'
   },
   module: {
