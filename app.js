@@ -31,27 +31,6 @@ app.use(helmet({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-// Force rewrite to production domain
-app.use((req, res, next) => {
-  if(process.env.ENV === 'production' && process.env.PRODUCTION_DOMAIN) {
-    const domain = process.env.PRODUCTION_DOMAIN;
-    if(req.hostname !== domain) {
-      res.redirect('https://' + domain);
-    } else {
-      next();
-    }
-  } else {
-    next();
-  }
-});
-
-// Redirect all http request to https
-app.set('forceSSLOptions', {
-  httpsPort: process.env.PORT
-});
-
-app.use(forceSSL);
-
 // Sessions
 app.use(session({
   resave: false,
