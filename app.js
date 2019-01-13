@@ -22,6 +22,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Support /.well-known (required for adding SSL with certbot)
 app.use(
+  "/.well-known",
   express.static(path.join(__dirname, ".well-known")),
   serveIndex(".well-known")
 );
