@@ -6,14 +6,14 @@ html(lang='en')
     meta(name='description', content='A url shortening app built with Node js and React')
 
     link(href="https://fonts.googleapis.com/css?family=Fira+Sans:200,300,300i,400,400i,600,600i,700,700i|Pacifico", rel="stylesheet")
-    link(rel='stylesheet', href="dist/styles.min.css")
+    link(rel='stylesheet', href="/dist/styles.min.css")
     meta(name="viewport", content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes")
     meta(name="mystery-token", content=`${csrfToken}`)
 
     <!-- Open Graph Data -->
     meta(property="og:title" content="Hain.ee | Save some bytes, shorten that URL")
     meta(property="og:description" content="A url shortening app built with Node js and React")
-    meta(property="og:image" content="images/share.png")
+    meta(property="og:image" content="/images/share.png")
     meta(property="og:url" content="https://hain.ee")
 
     <!-- Twitter Cards -->
@@ -22,11 +22,11 @@ html(lang='en')
     meta(property="twitter:card" content="summary")
     meta(property="twitter:site" content="@Andrew_Haine")
     meta(property="twitter:creator" content="@Andrew_Haine")
-    meta(property="twitter:image" content="images/share.png")
+    meta(property="twitter:image" content="/images/share.png")
 
     <!-- Default Icons -->
-    link(rel="icon", href="images/favicon.ico")
-    link(rel="apple-touch-icon" content="images/apple-touch-icon.png")
+    link(rel="icon", href="/images/favicon.ico")
+    link(rel="apple-touch-icon" content="/images/apple-touch-icon.png")
 
     <!-- Analytics -->
     script(async src=`https://www.googletagmanager.com/gtag/js?id=${gaTrackingID}`)
@@ -51,5 +51,5 @@ html(lang='en')
           span &nbsp;/&nbsp;
           a(href="http://unsplash.com?utm_source=hain.ee&utm_medium=referral&utm_campaign=api-credit", target="_blank") Unsplash
     block scripts
-      script(src="dist/vendors.min.js")
-      script(src="dist/main.min.js")
+      script(src="/dist/vendors.min.js")
+      script(src="/dist/main.min.js")
